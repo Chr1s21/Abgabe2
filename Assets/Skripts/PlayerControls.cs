@@ -1,4 +1,4 @@
-/*using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerControls : MonoBehaviour
@@ -94,4 +94,4 @@ public class PlayerControls : MonoBehaviour
 
         }
     }
-}*/
+}
