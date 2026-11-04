@@ -186,10 +186,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   ShowTopMostFoldoutHeaderGroup: 1
   radius: 10
-  force: 50
+  force: 10
   interactionMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   explosionPrefab: {fileID: 1121192042590650, guid: e1b08032bec16ba4eb1ae23cbd572664, type: 3}
   damageRadius: 10
   damage: 30

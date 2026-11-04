@@ -9,21 +9,20 @@ public class PlayerControls : NetworkBehaviour
     public Camera cam;
     public float throwForce;
     public float maxDistance;
+    private BuildMode buildMode;
 
     public LayerMask interactionMask;
-    public float pullForce;
     [SerializeField]
     private GameObject bombPrefab;
     private GameObject objInHand;
-    private float timeStep;
-    private bool gravityGunActive;
+  
 
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        timeStep = Time.fixedDeltaTime;
+        buildMode = GetComponent<BuildMode>();
     }
 
     void FixedUpdate()
@@ -33,30 +32,11 @@ public class PlayerControls : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (gravityGunActive && objInHand == null)
-        {
-            Debug.DrawLine(cam.transform.position, cam.transform.position + cam.transform.forward * 10);
-            RaycastHit hit;
-            if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, maxDistance, interactionMask))
-            {
-                if (Vector3.Distance(hand.transform.position, hit.transform.position) < 1)
-                {
-                    objInHand = hit.transform.gameObject;
-                    objInHand.transform.position = hand.transform.position;
-                    objInHand.transform.parent = hand.transform;
-                    objInHand.GetComponent<Rigidbody>().isKinematic = true;
-                }
-                else
-                {
-                    Vector3 pullDirection = (cam.transform.position - hit.point).normalized;
-                    hit.transform.GetComponent<Rigidbody>().AddForce(pullDirection * pullForce, ForceMode.Force);
-                }
-            }
-        }
+       
     }
     public void OnShoot(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.performed || buildMode.IsBuilding) return;
 
         if (objInHand == null)
         {
@@ -72,21 +52,10 @@ public class PlayerControls : NetworkBehaviour
         }
     }
 
-    public void OnGravityGun(InputAction.CallbackContext context)
-    {
-        if (context.performed)
-        {
-            gravityGunActive = true;
-        }
-        else if (context.canceled)
-        {
-            gravityGunActive = false;
-        }
-    }
 
     public void OnBomb(InputAction.CallbackContext context)
     {
-        if (!context.performed) return;
+        if (!context.performed || buildMode.IsBuilding) return;
 
         BombRpc(hand.transform.position, hand.transform.forward);
     }

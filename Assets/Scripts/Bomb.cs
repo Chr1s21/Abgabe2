@@ -24,9 +24,17 @@ public class Bomb : NetworkBehaviour
     void Explode()
     {
         Collider[] objs = Physics.OverlapSphere(transform.position,radius,interactionMask);
-        foreach(Collider obj in objs)
+        foreach (Collider obj in objs)
         {
-            obj.GetComponent<Rigidbody>().AddExplosionForce(force,transform.position,radius,1,ForceMode.Impulse);
+            // Gebaute Blöcke erst losreißen, damit sie die Kraft abbekommen.
+            BuildBlock block = obj.GetComponentInParent<BuildBlock>();
+            if (block != null) block.Loosen();
+
+            // Ohne Rigidbody (Boden, Wände) oder noch kinematic -> überspringen.
+            Rigidbody rb = obj.attachedRigidbody;
+            if (rb == null || rb.isKinematic) continue;
+
+            rb.AddExplosionForce(force, transform.position, radius, 1, ForceMode.Impulse);
         }
 
         HashSet<PlayerHealth> hitPlayers = new HashSet<PlayerHealth>();

@@ -449,6 +449,7 @@ GameObject:
   - component: {fileID: -2265750176651980842}
   - component: {fileID: 2385500738996427896}
   - component: {fileID: 534583211154925836}
+  - component: {fileID: 5771550930109341382}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -629,6 +630,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 5771550930109341382}
+        m_TargetAssemblyTypeName: BuildMode, Assembly-CSharp
+        m_MethodName: OnPlace
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: a641740f-c707-485f-af61-633ee5c173fa
     m_ActionName: 'Player/Shoot[/Mouse/leftButton]'
   - m_PersistentCalls:
@@ -649,9 +662,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Bomb[/Keyboard/f]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8481800437987135255}
-        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
-        m_MethodName: OnGravityGun
+      - m_Target: {fileID: 5771550930109341382}
+        m_TargetAssemblyTypeName: BuildMode, Assembly-CSharp
+        m_MethodName: OnToggleBuild
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -661,8 +674,72 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-    m_ActionId: 2562960b-7879-4ff3-afe8-445531f17ac4
-    m_ActionName: 'Player/GravityGun[/Mouse/rightButton]'
+    m_ActionId: 93c32a5d-3acd-41c7-88e1-ddf0270475b1
+    m_ActionName: 'Player/Buildmode[/Keyboard/b]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5771550930109341382}
+        m_TargetAssemblyTypeName: BuildMode, Assembly-CSharp
+        m_MethodName: OnRemove
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: eb821b70-beae-43be-85ee-771066fe4400
+    m_ActionName: 'Player/Remove[/Mouse/rightButton]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5771550930109341382}
+        m_TargetAssemblyTypeName: BuildMode, Assembly-CSharp
+        m_MethodName: OnSelectSlot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 39a10692-e472-476c-bedf-1b0faebce517
+    m_ActionName: 'Player/SelectSlot[/Keyboard/1,/Keyboard/2,/Keyboard/3,/Keyboard/4]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5771550930109341382}
+        m_TargetAssemblyTypeName: BuildMode, Assembly-CSharp
+        m_MethodName: OnCycleSlot
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 8b367046-1253-4a5e-b948-fa60d2bfb60e
+    m_ActionName: 'Player/CycleSlot[/Mouse/scroll/y]'
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 5771550930109341382}
+        m_TargetAssemblyTypeName: BuildMode, Assembly-CSharp
+        m_MethodName: OnRotate
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 0043f7e1-ea83-4152-9498-07ed514c3cde
+    m_ActionName: 'Player/Rotate[/Keyboard/r]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: Mouse & Keyboard
   m_DefaultActionMap: Player
@@ -700,7 +777,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3326822518
+  GlobalObjectIdHash: 2588204256
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -736,7 +813,6 @@ MonoBehaviour:
   interactionMask:
     serializedVersion: 2
     m_Bits: 0
-  pullForce: 40
   bombPrefab: {fileID: 626766275534485559, guid: 6b46043e006cc4bf485a0fa25f13e791, type: 3}
 --- !u!114 &-7818080859371933349
 MonoBehaviour:
@@ -836,6 +912,40 @@ MonoBehaviour:
   playerHealth: {fileID: 2385500738996427896}
   slider: {fileID: 3595067491262036194}
   canvasTransform: {fileID: 5643796387567586284}
+--- !u!114 &5771550930109341382
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2967920760037731942}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7643446385f1a974f98bbae7ccb63042, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: '::'
+  ShowTopMostFoldoutHeaderGroup: 1
+  cam: {fileID: 729530647703780905}
+  buildDistance: 12
+  buildSurfaceMask:
+    serializedVersion: 2
+    m_Bits: 257
+  gridSize: 4
+  validColor: {r: 0.3, g: 1, b: 0.3, a: 0.4}
+  invalidColor: {r: 1, g: 0.3, b: 0.3, a: 0.4}
+  parts:
+  - name: Floor
+    prefab: {fileID: 122722076597054405, guid: 4ef80e23fa10e6e4aa6927b00afeb1f1, type: 3}
+    ghostPrefab: {fileID: 8317136063152368173, guid: 9972ac6ccbb09784aad4c9a004b96c3e, type: 3}
+  - name: Wall
+    prefab: {fileID: 122722076597054405, guid: f1cbff09542f8e847948b0280a0ec8c7, type: 3}
+    ghostPrefab: {fileID: 8317136063152368173, guid: 0fe921e0fee6af84597cba2f982797fa, type: 3}
+  - name: Door
+    prefab: {fileID: 6550315710469856445, guid: b39e95b33d316d74db3b82fee15caeb3, type: 3}
+    ghostPrefab: {fileID: 6550315710469856445, guid: 4f7f3a51f025b0b4294fa4264a97ab4b, type: 3}
+  - name: Ramp
+    prefab: {fileID: 122722076597054405, guid: 17d634993a5f60e42af20a1649d875a5, type: 3}
+    ghostPrefab: {fileID: 8317136063152368173, guid: b87dd087b2e1f5848bea965f2e2817fd, type: 3}
 --- !u!1 &3844279129120286668
 GameObject:
   m_ObjectHideFlags: 0

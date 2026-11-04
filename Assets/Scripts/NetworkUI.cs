@@ -15,8 +15,9 @@ public class NetworkUI : MonoBehaviour
       else
       {
         GUILayout.Label(networkManager.IsHost ? "Modus : Host" : "Modus : Client");
-        GUILayout.EndArea();
+        
       }
+      GUILayout.EndArea();
 
     }
 }
