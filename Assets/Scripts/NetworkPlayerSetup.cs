@@ -19,7 +19,7 @@ public class NetworkPlayerSetup : NetworkBehaviour
         {
             CharacterController cc = GetComponent<CharacterController>();
             cc.enabled = false;
-            transform.position = new Vector3(5f + Random.Range(-3f,3f), 1.1f, 5f + Random.Range(-3f,3f));
+            transform.position = SpawnPoint.GetRandomPosition((int)(OwnerClientId % 2));   // <- diese Zeile ersetzen
             cc.enabled = true;
         }
     }

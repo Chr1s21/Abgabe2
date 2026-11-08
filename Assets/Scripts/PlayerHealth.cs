@@ -22,7 +22,7 @@ public class PlayerHealth : NetworkBehaviour
     public void Respawn()
     {
         currentHealth.Value = maxHealth;
-        Vector3 pos = new Vector3(Random.Range(-3f, 3f), 1f, Random.Range(-3f, 3f));
+        Vector3 pos = SpawnPoint.GetRandomPosition((int)(OwnerClientId % 2));   // <- diese Zeile ersetzen
         RespawnRpc(pos);
     }
     [Rpc(SendTo.Owner)]

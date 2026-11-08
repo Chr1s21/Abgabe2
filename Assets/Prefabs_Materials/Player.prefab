@@ -808,7 +808,7 @@ MonoBehaviour:
   ballPrefab: {fileID: 4538707842296378283, guid: 3efbe1ab477e64067a8d0767b5f47c21, type: 3}
   hand: {fileID: 6143301759354771630}
   cam: {fileID: 729530647703780905}
-  throwForce: 80
+  throwForce: 50
   maxDistance: 10
   interactionMask:
     serializedVersion: 2
