@@ -450,7 +450,6 @@ GameObject:
   - component: {fileID: 2385500738996427896}
   - component: {fileID: 534583211154925836}
   - component: {fileID: 5771550930109341382}
-  - component: {fileID: -5254293142575705837}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -540,7 +539,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Actions: {fileID: 0}
+  m_Actions: {fileID: -944628639613478452, guid: 791578212f55d1d4aa0ca9b43098c4c9, type: 3}
   m_NotificationBehavior: 2
   m_UIInputModule: {fileID: 0}
   m_DeviceLostEvent:
@@ -619,9 +618,9 @@ MonoBehaviour:
     m_ActionName: 'Player/Sprint[/Keyboard/shift]'
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: -5254293142575705837}
-        m_TargetAssemblyTypeName: Weapon, Assembly-CSharp
-        m_MethodName: OnFire
+      - m_Target: {fileID: 8481800437987135255}
+        m_TargetAssemblyTypeName: PlayerControls, Assembly-CSharp
+        m_MethodName: OnShoot
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -809,7 +808,7 @@ MonoBehaviour:
   ballPrefab: {fileID: 4538707842296378283, guid: 3efbe1ab477e64067a8d0767b5f47c21, type: 3}
   hand: {fileID: 6143301759354771630}
   cam: {fileID: 729530647703780905}
-  throwForce: 15
+  throwForce: 80
   maxDistance: 10
   interactionMask:
     serializedVersion: 2
@@ -947,28 +946,6 @@ MonoBehaviour:
   - name: Ramp
     prefab: {fileID: 122722076597054405, guid: 17d634993a5f60e42af20a1649d875a5, type: 3}
     ghostPrefab: {fileID: 8317136063152368173, guid: b87dd087b2e1f5848bea965f2e2817fd, type: 3}
---- !u!114 &-5254293142575705837
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2967920760037731942}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6cb29307d56d77046b3e9c4150fe0485, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: '::'
-  ShowTopMostFoldoutHeaderGroup: 1
-  cam: {fileID: 729530647703780905}
-  muzzle: {fileID: 4967413558986549869}
-  range: 100
-  fireRate: 5
-  playerDamage: 20
-  structureDamage: 25
-  hitForce: 5
-  tracerMaterial: {fileID: 2100000, guid: 532ee8db16b4a47469119edefcdec2d5, type: 2}
-  tracerDuration: 0.08
 --- !u!1 &3844279129120286668
 GameObject:
   m_ObjectHideFlags: 0
