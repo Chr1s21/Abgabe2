@@ -1,12 +1,12 @@
 using UnityEngine;
-using Unity.Netcode;      
-using UnityEngine.UI;  
+using Unity.Netcode;
+using UnityEngine.UI;
 
 public class HealthBar : NetworkBehaviour
 {
-   [SerializeField] PlayerHealth playerHealth;
-   [SerializeField] Slider slider;
-   [SerializeField] Transform canvasTransform;
+    [SerializeField] PlayerHealth playerHealth;
+    [SerializeField] Slider slider;
+    [SerializeField] Transform canvasTransform;
 
     public override void OnNetworkSpawn()
     {
@@ -28,7 +28,7 @@ public class HealthBar : NetworkBehaviour
 
     void LateUpdate()
     {
-        if(Camera.main != null)
+        if (Camera.main != null)
         {
             canvasTransform.forward = Camera.main.transform.forward;
         }

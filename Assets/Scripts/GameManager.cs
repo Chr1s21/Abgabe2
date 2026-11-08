@@ -15,7 +15,6 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<ulong> winnerId = new NetworkVariable<ulong>(
         PlayerHealth.NoAttacker, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    // Serverzeit, zu der die neue Runde startet (für den Countdown im HUD).
     public NetworkVariable<double> restartAt = new NetworkVariable<double>(
         0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -43,9 +42,7 @@ public class GameManager : NetworkBehaviour
         isGameOver.OnValueChanged -= OnGameOverChanged;
     }
 
-    // ------------------------------------------------ Server
 
-    // Wird von PlayerHealth aufgerufen, wenn jemand einen Kill bekommt.
     public void OnKill(PlayerHealth killer)
     {
         if (!IsServer || isGameOver.Value) return;
@@ -68,14 +65,11 @@ public class GameManager : NetworkBehaviour
 
     private void StartNewRound()
     {
-        // Alle gebauten Teile entfernen.
-        // Kopie der Liste, weil Despawn Teile aus der Original-Liste löscht.
         foreach (BuildBlock block in new List<BuildBlock>(BuildBlock.All))
         {
             if (block.IsSpawned) block.NetworkObject.Despawn();
         }
 
-        // Alle Spieler zurücksetzen.
         foreach (NetworkClient client in NetworkManager.ConnectedClientsList)
         {
             if (client.PlayerObject == null) continue;
@@ -90,11 +84,9 @@ public class GameManager : NetworkBehaviour
         Debug.Log("Neue Runde gestartet");
     }
 
-    // ------------------------------------------------ Alle Rechner
 
     private void OnGameOverChanged(bool oldValue, bool newValue)
     {
-        // Eigene Steuerung sperren bzw. wieder freigeben.
         NetworkObject localPlayer = NetworkManager.SpawnManager.GetLocalPlayerObject();
         if (localPlayer != null)
         {

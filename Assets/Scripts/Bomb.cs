@@ -51,8 +51,6 @@ public class Bomb : NetworkBehaviour
 
     private void ApplyDamage()
     {
-        // Ein Objekt kann mehrere Collider haben (z. B. die Tür).
-        // Pro Objekt merken wir uns nur die KLEINSTE Entfernung, damit es nur einmal Schaden bekommt.
         Dictionary<PlayerHealth, float> players = new Dictionary<PlayerHealth, float>();
         Dictionary<Destructible, float> structures = new Dictionary<Destructible, float>();
 
@@ -61,7 +59,6 @@ public class Bomb : NetworkBehaviour
 
         foreach (Collider col in hits)
         {
-            // Entfernung zum nächsten Punkt des Colliders, nicht zur Mitte.
             Vector3 closest = col.ClosestPointOnBounds(transform.position);
             float distance = Vector3.Distance(transform.position, closest);
 
@@ -79,8 +76,6 @@ public class Bomb : NetworkBehaviour
             }
         }
 
-        // Erst NACH der Schleife Schaden verteilen. Würde ein Teil mitten in der
-        // Schleife zerstört, hätten wir sonst Verweise auf gelöschte Objekte.
         foreach (var entry in players)
         {
             entry.Key.TakeDamage(CalculateDamage(maxPlayerDamage, entry.Value), throwerId);

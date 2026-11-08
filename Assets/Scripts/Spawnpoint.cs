@@ -13,7 +13,6 @@ public class SpawnPoint : MonoBehaviour
 
     public static Vector3 GetRandomPosition(int side)
     {
-        // Nur Spawnpunkte der gewünschten Seite.
         List<SpawnPoint> candidates = new List<SpawnPoint>();
         foreach (SpawnPoint point in all)
         {
@@ -26,7 +25,6 @@ public class SpawnPoint : MonoBehaviour
             return new Vector3(0f, 1.1f, 0f);
         }
 
-        // Mischen und den ersten freien nehmen.
         for (int i = 0; i < candidates.Count; i++)
         {
             int j = Random.Range(i, candidates.Count);
@@ -38,7 +36,6 @@ public class SpawnPoint : MonoBehaviour
             if (!point.IsBlocked()) return point.transform.position;
         }
 
-        // Alle besetzt: dann eben einen zufälligen.
         return candidates[0].transform.position;
     }
 
@@ -51,7 +48,6 @@ public class SpawnPoint : MonoBehaviour
         return false;
     }
 
-    // Im Scene-Fenster sichtbar machen: Seite 0 blau, Seite 1 rot.
     private void OnDrawGizmos()
     {
         Gizmos.color = side == 0 ? Color.blue : Color.red;

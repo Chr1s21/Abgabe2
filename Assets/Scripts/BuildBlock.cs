@@ -7,7 +7,6 @@ public enum PartType { Floor, Wall, Ramp }
 [RequireComponent(typeof(Rigidbody))]
 public class BuildBlock : NetworkBehaviour
 {
-    // Alle gebauten Teile in der Welt (auf jedem Rechner).
     public static readonly List<BuildBlock> All = new List<BuildBlock>();
 
     [SerializeField] private PartType type;
@@ -20,8 +19,6 @@ public class BuildBlock : NetworkBehaviour
         NetworkVariableReadPermission.Everyone,
         NetworkVariableWritePermission.Server);
 
-    // Losgesprengt? Als NetworkVariable, damit auch Clients wissen,
-    // dass der Platz wieder frei ist.
     public NetworkVariable<bool> IsLoose = new NetworkVariable<bool>(
         false,
         NetworkVariableReadPermission.Everyone,
@@ -67,9 +64,7 @@ public class BuildBlock : NetworkBehaviour
         if (IsSpawned) NetworkObject.Despawn();
     }
 
-    // ------------------------------------------------ Slots
 
-    // Welchen Platz belegt ein Teil dieses Typs in dieser Zelle mit dieser Drehung?
     public static (Vector3Int, PartType) GetSlot(PartType type, Vector3 cellCenter, Quaternion rotation, float gridSize)
     {
         float half = gridSize * 0.5f;
@@ -88,7 +83,6 @@ public class BuildBlock : NetworkBehaviour
                 break;
         }
 
-        // In ganze Zahlen umrechnen, damit kleine Rundungsfehler nicht stören.
         Vector3Int key = Vector3Int.RoundToInt(slotPosition * 2f / gridSize);
         return (key, type);
     }
@@ -107,21 +101,17 @@ public class BuildBlock : NetworkBehaviour
         return false;
     }
 
-        // ------------------------------------------------ Stabilität
 
     private const float TouchMargin = 0.05f;
 
-    // Wird auf dem Server aufgerufen, nachdem irgendetwas entfernt wurde.
     public static void CheckStability()
     {
-        // 1. Alle noch festen Teile sammeln.
         List<BuildBlock> standing = new List<BuildBlock>();
         foreach (BuildBlock block in All)
         {
             if (block.IsSpawned && !block.IsLoose.Value) standing.Add(block);
         }
 
-        // 2. Startpunkte: alle Teile, die den Boden/das Level berühren.
         HashSet<BuildBlock> supported = new HashSet<BuildBlock>();
         Queue<BuildBlock> queue = new Queue<BuildBlock>();
 
@@ -134,7 +124,6 @@ public class BuildBlock : NetworkBehaviour
             }
         }
 
-        // 3. Von dort aus alle verbundenen Nachbarn besuchen.
         while (queue.Count > 0)
         {
             BuildBlock current = queue.Dequeue();
@@ -147,14 +136,12 @@ public class BuildBlock : NetworkBehaviour
             }
         }
 
-        // 4. Alles, was nicht erreicht wurde, hängt in der Luft.
         foreach (BuildBlock block in standing)
         {
             if (!supported.Contains(block)) block.Loosen();
         }
     }
 
-    // Box um alle Collider dieses Teils.
     private Bounds GetBounds()
     {
         Bounds bounds = new Bounds(transform.position, Vector3.zero);
@@ -180,10 +167,8 @@ public class BuildBlock : NetworkBehaviour
     {
         foreach (Collider col in OverlapAround(~0))
         {
-            // Andere Bauteile zählen nicht als Boden.
             if (col.GetComponentInParent<BuildBlock>() != null) continue;
 
-            // Spieler, Bälle und Bomben tragen kein Bauwerk.
             if (col.GetComponentInParent<PlayerHealth>() != null) continue;
             Rigidbody rb = col.attachedRigidbody;
             if (rb != null && !rb.isKinematic) continue;

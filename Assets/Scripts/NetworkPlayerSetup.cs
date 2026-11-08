@@ -11,7 +11,7 @@ public class NetworkPlayerSetup : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         _playerInput.enabled = IsOwner;
-        _playerCamera.enabled = IsOwner;    
+        _playerCamera.enabled = IsOwner;
         _audioListener.enabled = IsOwner;
         _characterController.enabled = IsOwner;
 
@@ -19,7 +19,7 @@ public class NetworkPlayerSetup : NetworkBehaviour
         {
             CharacterController cc = GetComponent<CharacterController>();
             cc.enabled = false;
-            transform.position = SpawnPoint.GetRandomPosition((int)(OwnerClientId % 2));   // <- diese Zeile ersetzen
+            transform.position = SpawnPoint.GetRandomPosition((int)(OwnerClientId % 2));
             cc.enabled = true;
         }
     }

@@ -5,7 +5,6 @@ public class Destructible : NetworkBehaviour
 {
     [SerializeField] private int maxHealth = 100;
 
-    // Alle dürfen lesen (für Anzeige/Farbe), nur der Server schreibt.
     public NetworkVariable<int> Health = new NetworkVariable<int>(
         0,
         NetworkVariableReadPermission.Everyone,
@@ -13,7 +12,6 @@ public class Destructible : NetworkBehaviour
 
     public int MaxHealth => maxHealth;
 
-    // 1 = voll, 0 = kaputt. Praktisch für Farben oder Balken.
     public float HealthPercent => maxHealth > 0 ? (float)Health.Value / maxHealth : 0f;
 
     public override void OnNetworkSpawn()
@@ -24,7 +22,6 @@ public class Destructible : NetworkBehaviour
         }
     }
 
-    // Nur auf dem Server aufrufen (von Waffe oder Bombe).
     public void TakeDamage(int amount)
     {
         if (!IsServer || !IsSpawned || amount <= 0) return;
@@ -41,7 +38,6 @@ public class Destructible : NetworkBehaviour
 
     private void Break()
     {
-        // Collider sofort aus, sonst "sieht" die Prüfung das Teil noch.
         foreach (Collider col in GetComponentsInChildren<Collider>())
         {
             col.enabled = false;
@@ -49,7 +45,6 @@ public class Destructible : NetworkBehaviour
 
         NetworkObject.Despawn();
 
-        // Danach prüfen, ob dadurch etwas in der Luft hängt.
         BuildBlock.CheckStability();
     }
 }

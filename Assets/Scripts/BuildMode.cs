@@ -44,7 +44,6 @@ public class BuildMode : NetworkBehaviour
 
     private PartType SelectedType => parts[selectedIndex].prefab.GetComponent<BuildBlock>().Type;
 
-    // ------------------------------------------------ Netzwerk
 
     public override void OnNetworkSpawn()
     {
@@ -56,7 +55,6 @@ public class BuildMode : NetworkBehaviour
         DestroyGhost();
     }
 
-    // ------------------------------------------------ Input
 
     public void OnToggleBuild(InputAction.CallbackContext context)
     {
@@ -127,7 +125,6 @@ public class BuildMode : NetworkBehaviour
         }
     }
 
-    // ------------------------------------------------ Vorschau
 
     private void Update()
     {
@@ -163,8 +160,6 @@ public class BuildMode : NetworkBehaviour
 
     private Vector3 CalculateTargetCell(RaycastHit hit)
     {
-        // Ein kleines Stück von der getroffenen Fläche weg in Richtung Spieler,
-        // damit wir in der Zelle VOR der Fläche landen und nicht darin.
         Vector3 point = hit.point + hit.normal * 0.1f;
         return SnapToCell(point);
     }
@@ -181,7 +176,6 @@ public class BuildMode : NetworkBehaviour
 
     private int CalculateRotationSteps()
     {
-        // Blickrichtung des Spielers auf 0/90/180/270 Grad runden, plus Drehung mit R.
         int playerSteps = Mathf.RoundToInt(transform.eulerAngles.y / 90f);
         return (playerSteps + rotationOffset) % 4;
     }
@@ -210,7 +204,6 @@ public class BuildMode : NetworkBehaviour
         canPlace = false;
     }
 
-    // ------------------------------------------------ Server
 
     [Rpc(SendTo.Server)]
     private void PlaceRpc(Vector3 cellCenter, int rotationSteps, int partIndex)
@@ -218,7 +211,6 @@ public class BuildMode : NetworkBehaviour
         if (partIndex < 0 || partIndex >= parts.Length) return;
         if (rotationSteps < 0 || rotationSteps > 3) return;
 
-        // Sicherstellen, dass die Position wirklich im Raster liegt.
         cellCenter = SnapToCell(cellCenter);
         if (Vector3.Distance(transform.position, cellCenter) > buildDistance + gridSize * 2f) return;
 

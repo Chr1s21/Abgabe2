@@ -19,7 +19,6 @@ public class PlayerHealth : NetworkBehaviour
     public NetworkVariable<int> kills = new NetworkVariable<int>(
         0, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
-    // Für das HUD in Schritt 3
     public float RespawnDelay => respawnDelay;
     public float DeathTime { get; private set; }
 
@@ -36,7 +35,6 @@ public class PlayerHealth : NetworkBehaviour
         isDead.OnValueChanged -= OnDeadChanged;
     }
 
-    // ------------------------------------------------ Server
 
     public void TakeDamage(int damage, ulong attackerId = NoAttacker)
     {
@@ -53,7 +51,6 @@ public class PlayerHealth : NetworkBehaviour
     {
         isDead.Value = true;
 
-        // Kill für den Angreifer, aber nicht, wenn man sich selbst erwischt hat.
         if (attackerId != NoAttacker && attackerId != OwnerClientId)
         {
             PlayerHealth killer = GetPlayer(attackerId);
@@ -77,7 +74,6 @@ public class PlayerHealth : NetworkBehaviour
         currentHealth.Value = maxHealth;
         RespawnRpc(SpawnPoint.GetRandomPosition((int)(OwnerClientId % 2)));
 
-        // Kurz warten, damit der Teleport ankommt, bevor man wieder sichtbar wird.
         Invoke(nameof(Revive), 0.2f);
     }
 
@@ -86,7 +82,6 @@ public class PlayerHealth : NetworkBehaviour
         isDead.Value = false;
     }
 
-    // Spieler-Objekt zu einer Client-ID finden (nur auf dem Server).
     public static PlayerHealth GetPlayer(ulong clientId)
     {
         if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client)
@@ -104,11 +99,9 @@ public class PlayerHealth : NetworkBehaviour
         cc.enabled = false;
         GetComponent<NetworkTransform>().Teleport(spawnPosition, transform.rotation, transform.localScale);
 
-        // Ist man noch "tot", bleibt er aus; eingeschaltet wird er beim Wiederbeleben.
         cc.enabled = !isDead.Value;
     }
 
-    // ------------------------------------------------ Alle Rechner
 
     private void OnDeadChanged(bool oldValue, bool newValue)
     {
@@ -117,7 +110,6 @@ public class PlayerHealth : NetworkBehaviour
 
     private void ApplyDeadState(bool dead)
     {
-        // Für alle: unsichtbar und nicht treffbar.
         foreach (Renderer r in GetComponentsInChildren<Renderer>(true)) r.enabled = !dead;
         foreach (Canvas c in GetComponentsInChildren<Canvas>(true)) c.enabled = !dead;
         foreach (Collider c in GetComponentsInChildren<Collider>(true)) c.enabled = !dead;
@@ -127,7 +119,6 @@ public class PlayerHealth : NetworkBehaviour
         UpdateControls();
     }
 
-    // Steuerung nur, wenn man lebt UND die Runde läuft.
     public void UpdateControls()
     {
         if (!IsOwner) return;

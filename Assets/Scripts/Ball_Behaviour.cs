@@ -29,7 +29,6 @@ public class Ball_Behaviour : NetworkBehaviour
         }
     }
 
-    // Spieler: über den Trigger am Body
     void OnTriggerEnter(Collider collider)
     {
         if (!IsServer || !IsSpawned || hasHit) return;
@@ -42,7 +41,6 @@ public class Ball_Behaviour : NetworkBehaviour
         NetworkObject.Despawn();
     }
 
-    // Blöcke und Gegenstände: über eine echte Kollision
     void OnCollisionEnter(Collision collision)
     {
         if (!IsServer || !IsSpawned || hasHit) return;

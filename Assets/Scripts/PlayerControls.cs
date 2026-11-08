@@ -52,7 +52,6 @@ public class PlayerControls : NetworkBehaviour
         bomb.GetComponent<Rigidbody>().AddForce(direction * throwForce, ForceMode.Impulse);
     }
 
-    // Server-Prüfung: Ausgeschiedene Spieler und Spieler nach Rundenende dürfen nichts werfen.
     private bool CanAct()
     {
         if (GameManager.IsGameOver) return false;

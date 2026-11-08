@@ -19,11 +19,9 @@ public class PlayerHUD : NetworkBehaviour
 
     public static string PlayerName(ulong clientId) => $"Spieler {clientId + 1}";
 
-    // ------------------------------------------------ Zeichnen
 
     private void OnGUI()
     {
-        // Nur der eigene Spieler zeichnet ein HUD.
         if (!IsSpawned || !IsOwner) return;
 
         InitStyles();
@@ -137,11 +135,9 @@ public class PlayerHUD : NetworkBehaviour
         ShadowLabel(new Rect(0, Screen.height / 2f, Screen.width, 60), $"Neue Runde in {left:0} s", bigStyle);
     }
 
-    // ------------------------------------------------ Hilfsmethoden
 
     private void RefreshPlayers()
     {
-        // Nicht jeden Frame suchen, zweimal pro Sekunde reicht.
         if (Time.time >= nextRefresh)
         {
             nextRefresh = Time.time + 0.5f;
@@ -161,7 +157,6 @@ public class PlayerHUD : NetworkBehaviour
         GUI.color = old;
     }
 
-    // Text mit dunklem Schatten, damit er auf hellem Hintergrund lesbar bleibt.
     private static void ShadowLabel(Rect rect, string text, GUIStyle style)
     {
         Color old = style.normal.textColor;
