@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class Bomb : NetworkBehaviour
 {
+    [HideInInspector] public ulong throwerId = PlayerHealth.NoAttacker;
     [Header("Zünder")]
     [SerializeField] private float fuseTime = 3f;
 
@@ -82,7 +83,7 @@ public class Bomb : NetworkBehaviour
         // Schleife zerstört, hätten wir sonst Verweise auf gelöschte Objekte.
         foreach (var entry in players)
         {
-            entry.Key.TakeDamage(CalculateDamage(maxPlayerDamage, entry.Value));
+            entry.Key.TakeDamage(CalculateDamage(maxPlayerDamage, entry.Value), throwerId);
         }
         foreach (var entry in structures)
         {

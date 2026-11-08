@@ -38,7 +38,7 @@ public class Ball_Behaviour : NetworkBehaviour
         if (playerHealth == null || playerHealth.OwnerClientId == shooterId) return;
 
         hasHit = true;
-        playerHealth.TakeDamage(damage);
+        playerHealth.TakeDamage(damage, shooterId);
         NetworkObject.Despawn();
     }
 
