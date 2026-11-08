@@ -4,52 +4,104 @@ using System.Collections.Generic;
 
 public class Bomb : NetworkBehaviour
 {
+    [Header("Zünder")]
+    [SerializeField] private float fuseTime = 3f;
+
+    [Header("Wegschleudern")]
     public float radius;
     public float force;
     public LayerMask interactionMask;
 
+    [Header("Schaden")]
+    public float damageRadius = 10f;
+    [SerializeField] private int maxPlayerDamage = 70;
+    [SerializeField] private int maxStructureDamage = 120;
+
+    [Header("Effekt")]
     public GameObject explosionPrefab;
 
-    public float damageRadius = 10f;
-    public int damage = 30;
-
-   public override void OnNetworkSpawn()
+    public override void OnNetworkSpawn()
     {
         if (IsServer)
         {
-            Invoke(nameof(Explode), 3f);
+            Invoke(nameof(Explode), fuseTime);
         }
     }
 
     void Explode()
     {
-        Collider[] objs = Physics.OverlapSphere(transform.position,radius,interactionMask);
-        foreach (Collider obj in objs)
-        {
-            // Gebaute Blöcke erst losreißen, damit sie die Kraft abbekommen.
-            BuildBlock block = obj.GetComponentInParent<BuildBlock>();
-            if (block != null) block.Loosen();
+        PushRigidbodies();
+        ApplyDamage();
 
-            // Ohne Rigidbody (Boden, Wände) oder noch kinematic -> überspringen.
+        ExplodeRpc();
+        Invoke(nameof(End), 3f);
+    }
+
+    private void PushRigidbodies()
+    {
+        foreach (Collider obj in Physics.OverlapSphere(transform.position, radius, interactionMask))
+        {
             Rigidbody rb = obj.attachedRigidbody;
             if (rb == null || rb.isKinematic) continue;
 
             rb.AddExplosionForce(force, transform.position, radius, 1, ForceMode.Impulse);
         }
+    }
 
-        HashSet<PlayerHealth> hitPlayers = new HashSet<PlayerHealth>();
-        foreach(Collider col in Physics.OverlapSphere(transform.position, damageRadius))
+    private void ApplyDamage()
+    {
+        // Ein Objekt kann mehrere Collider haben (z. B. die Tür).
+        // Pro Objekt merken wir uns nur die KLEINSTE Entfernung, damit es nur einmal Schaden bekommt.
+        Dictionary<PlayerHealth, float> players = new Dictionary<PlayerHealth, float>();
+        Dictionary<Destructible, float> structures = new Dictionary<Destructible, float>();
+
+        Collider[] hits = Physics.OverlapSphere(transform.position, damageRadius,
+            ~0, QueryTriggerInteraction.Ignore);
+
+        foreach (Collider col in hits)
         {
-            PlayerHealth playerHealth = col.gameObject.GetComponentInParent<PlayerHealth>();
-            if(playerHealth != null && hitPlayers.Add(playerHealth))
+            // Entfernung zum nächsten Punkt des Colliders, nicht zur Mitte.
+            Vector3 closest = col.ClosestPointOnBounds(transform.position);
+            float distance = Vector3.Distance(transform.position, closest);
+
+            PlayerHealth player = col.GetComponentInParent<PlayerHealth>();
+            if (player != null)
             {
-                playerHealth.TakeDamage(damage);
+                KeepClosest(players, player, distance);
+                continue;
+            }
+
+            Destructible structure = col.GetComponentInParent<Destructible>();
+            if (structure != null)
+            {
+                KeepClosest(structures, structure, distance);
             }
         }
 
-        ExplodeRpc();
+        // Erst NACH der Schleife Schaden verteilen. Würde ein Teil mitten in der
+        // Schleife zerstört, hätten wir sonst Verweise auf gelöschte Objekte.
+        foreach (var entry in players)
+        {
+            entry.Key.TakeDamage(CalculateDamage(maxPlayerDamage, entry.Value));
+        }
+        foreach (var entry in structures)
+        {
+            entry.Key.TakeDamage(CalculateDamage(maxStructureDamage, entry.Value));
+        }
+    }
 
-        Invoke(nameof(End), 3f);
+    private static void KeepClosest<T>(Dictionary<T, float> dict, T key, float distance)
+    {
+        if (!dict.TryGetValue(key, out float current) || distance < current)
+        {
+            dict[key] = distance;
+        }
+    }
+
+    private int CalculateDamage(int maxDamage, float distance)
+    {
+        float factor = 1f - Mathf.Clamp01(distance / damageRadius);
+        return Mathf.RoundToInt(maxDamage * factor);
     }
 
     void End()
@@ -60,9 +112,9 @@ public class Bomb : NetworkBehaviour
     [Rpc(SendTo.ClientsAndHost)]
     private void ExplodeRpc()
     {
-        Instantiate(explosionPrefab,transform.position,Quaternion.identity);
+        Instantiate(explosionPrefab, transform.position, Quaternion.identity);
         GetComponent<AudioSource>().Play();
-        GetComponent<Renderer>().enabled=false;
-        GetComponent<Collider>().enabled=false;
+        GetComponent<Renderer>().enabled = false;
+        GetComponent<Collider>().enabled = false;
     }
 }

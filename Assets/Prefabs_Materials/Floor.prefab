@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7450705308993549285}
   - component: {fileID: 3562607650253744745}
   - component: {fileID: 2129697117673053745}
+  - component: {fileID: 7060870810923123384}
   m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
@@ -76,14 +77,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 3160451221
+  GlobalObjectIdHash: 820442829
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
   Ownership: 1
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
-  m_InScenePlaced: 1
+  m_InScenePlaced: 0
   ActiveSceneSynchronization: 0
   SceneMigrationSynchronization: 0
   SpawnWithObservers: 1
@@ -104,12 +105,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BuildBlock
   ShowTopMostFoldoutHeaderGroup: 1
-  despawnAfterLoose: 10
+  type: 0
+  despawnAfterLoose: 3
   BuilderId:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 18446744073709551615
+  IsLoose:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!114 &3562607650253744745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -173,6 +180,25 @@ MonoBehaviour:
   UseRigidBodyForMotion: 0
   AutoUpdateKinematicState: 1
   AutoSetKinematicOnDespawn: 1
+--- !u!114 &7060870810923123384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 122722076597054405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2266f852d685a4a854211f61e81312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Destructible
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 140
+  Health:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 0
 --- !u!1 &302851782624159002
 GameObject:
   m_ObjectHideFlags: 0

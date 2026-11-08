@@ -239,6 +239,12 @@ public class BuildMode : NetworkBehaviour
         if (block.BuilderId.Value != OwnerClientId) return;
         if (Vector3.Distance(transform.position, blockObject.transform.position) > buildDistance + gridSize * 2f) return;
 
+        foreach (Collider col in blockObject.GetComponentsInChildren<Collider>())
+        {
+            col.enabled = false;
+        }
+
         blockObject.Despawn();
+        BuildBlock.CheckStability();
     }
 }

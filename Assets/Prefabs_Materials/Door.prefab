@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 8386300472677920615}
   - component: {fileID: 1210786340135750669}
   - component: {fileID: 1679926423476347934}
+  - component: {fileID: 2486660293612168951}
   m_Layer: 8
   m_Name: Door
   m_TagString: Untagged
@@ -282,7 +283,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuildBlock
   ShowTopMostFoldoutHeaderGroup: 1
   type: 1
-  despawnAfterLoose: 10
+  despawnAfterLoose: 3
   BuilderId:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
@@ -293,6 +294,25 @@ MonoBehaviour:
       MinSecondsBetweenUpdates: 0
       MaxSecondsBetweenUpdates: 0
     m_InternalValue: 0
+--- !u!114 &2486660293612168951
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6550315710469856445}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a2266f852d685a4a854211f61e81312, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Destructible
+  ShowTopMostFoldoutHeaderGroup: 1
+  maxHealth: 120
+  Health:
+    UpdateTraits:
+      MinSecondsBetweenUpdates: 0
+      MaxSecondsBetweenUpdates: 0
+    m_InternalValue: 120
 --- !u!1 &6686887755424975774
 GameObject:
   m_ObjectHideFlags: 0

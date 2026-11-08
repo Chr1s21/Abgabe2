@@ -106,4 +106,104 @@ public class BuildBlock : NetworkBehaviour
         }
         return false;
     }
+
+        // ------------------------------------------------ Stabilität
+
+    private const float TouchMargin = 0.05f;
+
+    // Wird auf dem Server aufgerufen, nachdem irgendetwas entfernt wurde.
+    public static void CheckStability()
+    {
+        // 1. Alle noch festen Teile sammeln.
+        List<BuildBlock> standing = new List<BuildBlock>();
+        foreach (BuildBlock block in All)
+        {
+            if (block.IsSpawned && !block.IsLoose.Value) standing.Add(block);
+        }
+
+        // 2. Startpunkte: alle Teile, die den Boden/das Level berühren.
+        HashSet<BuildBlock> supported = new HashSet<BuildBlock>();
+        Queue<BuildBlock> queue = new Queue<BuildBlock>();
+
+        foreach (BuildBlock block in standing)
+        {
+            if (block.TouchesGround())
+            {
+                supported.Add(block);
+                queue.Enqueue(block);
+            }
+        }
+
+        // 3. Von dort aus alle verbundenen Nachbarn besuchen.
+        while (queue.Count > 0)
+        {
+            BuildBlock current = queue.Dequeue();
+            foreach (BuildBlock neighbour in current.GetNeighbours())
+            {
+                if (supported.Add(neighbour))   // Add ist false, wenn schon drin
+                {
+                    queue.Enqueue(neighbour);
+                }
+            }
+        }
+
+        // 4. Alles, was nicht erreicht wurde, hängt in der Luft.
+        foreach (BuildBlock block in standing)
+        {
+            if (!supported.Contains(block)) block.Loosen();
+        }
+    }
+
+    // Box um alle Collider dieses Teils.
+    private Bounds GetBounds()
+    {
+        Bounds bounds = new Bounds(transform.position, Vector3.zero);
+        bool first = true;
+
+        foreach (Collider col in GetComponentsInChildren<Collider>())
+        {
+            if (!col.enabled) continue;
+            if (first) { bounds = col.bounds; first = false; }
+            else bounds.Encapsulate(col.bounds);
+        }
+        return bounds;
+    }
+
+    private Collider[] OverlapAround(int layerMask)
+    {
+        Bounds b = GetBounds();
+        return Physics.OverlapBox(b.center, b.extents + Vector3.one * TouchMargin,
+            Quaternion.identity, layerMask, QueryTriggerInteraction.Ignore);
+    }
+
+    private bool TouchesGround()
+    {
+        foreach (Collider col in OverlapAround(~0))
+        {
+            // Andere Bauteile zählen nicht als Boden.
+            if (col.GetComponentInParent<BuildBlock>() != null) continue;
+
+            // Spieler, Bälle und Bomben tragen kein Bauwerk.
+            if (col.GetComponentInParent<PlayerHealth>() != null) continue;
+            Rigidbody rb = col.attachedRigidbody;
+            if (rb != null && !rb.isKinematic) continue;
+
+            return true; // Level, Boden oder ein fester Gegenstand
+        }
+        return false;
+    }
+
+    private List<BuildBlock> GetNeighbours()
+    {
+        List<BuildBlock> result = new List<BuildBlock>();
+
+        foreach (Collider col in OverlapAround(LayerMask.GetMask("Block")))
+        {
+            BuildBlock other = col.GetComponentInParent<BuildBlock>();
+            if (other == null || other == this) continue;
+            if (!other.IsSpawned || other.IsLoose.Value) continue;
+            if (!result.Contains(other)) result.Add(other);
+        }
+        return result;
+    }
 }
