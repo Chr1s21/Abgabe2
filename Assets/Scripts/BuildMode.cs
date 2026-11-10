@@ -27,6 +27,14 @@ public class BuildMode : NetworkBehaviour
     [Header("Bauteile")]
     [SerializeField] private BuildPart[] parts;
 
+    [Header("Ausrüstung")]
+    [SerializeField] private GameObject weaponModel;
+    [SerializeField] private GameObject hammerModel;
+
+    // Der Besitzer schreibt, alle lesen: so sehen auch die anderen, was du in der Hand hast.
+    private NetworkVariable<bool> buildingSynced = new NetworkVariable<bool>(
+        false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
+
     private bool isBuilding;
     public bool IsBuilding => isBuilding;
 
@@ -44,23 +52,31 @@ public class BuildMode : NetworkBehaviour
 
     private PartType SelectedType => parts[selectedIndex].prefab.GetComponent<BuildBlock>().Type;
 
+    // ------------------------------------------------ Netzwerk
 
     public override void OnNetworkSpawn()
     {
         if (cam == null) cam = GetComponentInChildren<Camera>();
+
+        buildingSynced.OnValueChanged += OnBuildingChanged;
+        UpdateEquipment(buildingSynced.Value);   // für Spieler, die später beitreten
     }
 
     public override void OnNetworkDespawn()
     {
+        buildingSynced.OnValueChanged -= OnBuildingChanged;
         DestroyGhost();
     }
 
+    // ------------------------------------------------ Input
 
     public void OnToggleBuild(InputAction.CallbackContext context)
     {
         if (!context.performed) return;
 
         isBuilding = !isBuilding;
+        buildingSynced.Value = isBuilding;
+        UpdateEquipment(isBuilding);
 
         if (isBuilding) CreateGhost();
         else DestroyGhost();
@@ -125,6 +141,20 @@ public class BuildMode : NetworkBehaviour
         }
     }
 
+    // ------------------------------------------------ Ausrüstung
+
+    private void OnBuildingChanged(bool oldValue, bool newValue)
+    {
+        UpdateEquipment(newValue);
+    }
+
+    private void UpdateEquipment(bool building)
+    {
+        if (weaponModel != null) weaponModel.SetActive(!building);
+        if (hammerModel != null) hammerModel.SetActive(building);
+    }
+
+    // ------------------------------------------------ Vorschau
 
     private void Update()
     {
@@ -160,6 +190,8 @@ public class BuildMode : NetworkBehaviour
 
     private Vector3 CalculateTargetCell(RaycastHit hit)
     {
+        // Ein kleines Stück von der getroffenen Fläche weg,
+        // damit wir in der Zelle VOR der Fläche landen und nicht darin.
         Vector3 point = hit.point + hit.normal * 0.1f;
         return SnapToCell(point);
     }
@@ -176,6 +208,7 @@ public class BuildMode : NetworkBehaviour
 
     private int CalculateRotationSteps()
     {
+        // Blickrichtung auf 0/90/180/270 Grad runden, plus Drehung mit R.
         int playerSteps = Mathf.RoundToInt(transform.eulerAngles.y / 90f);
         return (playerSteps + rotationOffset) % 4;
     }
@@ -190,6 +223,7 @@ public class BuildMode : NetworkBehaviour
         ghost = Instantiate(parts[selectedIndex].ghostPrefab);
         ghostRenderers = ghost.GetComponentsInChildren<Renderer>();
 
+        // Absicherung: Der Ghost darf nie vom Raycast getroffen werden.
         foreach (Collider col in ghost.GetComponentsInChildren<Collider>())
         {
             col.enabled = false;
@@ -204,6 +238,7 @@ public class BuildMode : NetworkBehaviour
         canPlace = false;
     }
 
+    // ------------------------------------------------ Server
 
     [Rpc(SendTo.Server)]
     private void PlaceRpc(Vector3 cellCenter, int rotationSteps, int partIndex)
@@ -211,6 +246,7 @@ public class BuildMode : NetworkBehaviour
         if (partIndex < 0 || partIndex >= parts.Length) return;
         if (rotationSteps < 0 || rotationSteps > 3) return;
 
+        // Sicherstellen, dass die Position wirklich im Raster liegt.
         cellCenter = SnapToCell(cellCenter);
         if (Vector3.Distance(transform.position, cellCenter) > buildDistance + gridSize * 2f) return;
 

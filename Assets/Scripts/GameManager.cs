@@ -6,7 +6,7 @@ public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; private set; }
 
-    [SerializeField] private int killsToWin = 1;
+    [SerializeField] private int killsToWin = 10;
     [SerializeField] private float restartDelay = 5f;
 
     public NetworkVariable<bool> isGameOver = new NetworkVariable<bool>(
