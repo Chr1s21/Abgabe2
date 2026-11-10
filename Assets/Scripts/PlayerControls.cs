@@ -7,6 +7,7 @@ public class PlayerControls : NetworkBehaviour
     [SerializeField] private GameObject ballPrefab;
     [SerializeField] private GameObject bombPrefab;
     [SerializeField] private GameObject hand;
+    [SerializeField] private Camera cam;
     [SerializeField] private float throwForce;
 
     private BuildMode buildMode;
@@ -14,20 +15,42 @@ public class PlayerControls : NetworkBehaviour
     void Start()
     {
         buildMode = GetComponent<BuildMode>();
+        if (cam == null) cam = GetComponentInChildren<Camera>();
     }
 
     public void OnShoot(InputAction.CallbackContext context)
     {
         if (!context.performed || buildMode.IsBuilding) return;
 
-        ShootRpc(hand.transform.position, hand.transform.forward);
+        Vector3 start = hand.transform.position;
+        ShootRpc(start, GetAimDirection(start));
     }
 
     public void OnBomb(InputAction.CallbackContext context)
     {
         if (!context.performed || buildMode.IsBuilding) return;
 
-        BombRpc(hand.transform.position, hand.transform.forward);
+        Vector3 start = hand.transform.position;
+        BombRpc(start, GetAimDirection(start));
+    }
+
+    // Richtung von der Mündung zu dem Punkt, auf den das Fadenkreuz zeigt.
+    private Vector3 GetAimDirection(Vector3 from)
+    {
+        int mask = ~LayerMask.GetMask("Player");   // sich selbst nicht treffen
+        Vector3 target;
+
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out RaycastHit hit,
+                200f, mask, QueryTriggerInteraction.Ignore))
+        {
+            target = hit.point;
+        }
+        else
+        {
+            target = cam.transform.position + cam.transform.forward * 200f;   // in den Himmel
+        }
+
+        return (target - from).normalized;
     }
 
     [Rpc(SendTo.Server)]
@@ -52,6 +75,7 @@ public class PlayerControls : NetworkBehaviour
         bomb.GetComponent<Rigidbody>().AddForce(direction * throwForce, ForceMode.Impulse);
     }
 
+    // Server-Prüfung: Ausgeschiedene Spieler und Spieler nach Rundenende dürfen nichts werfen.
     private bool CanAct()
     {
         if (GameManager.IsGameOver) return false;
