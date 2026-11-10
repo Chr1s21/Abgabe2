@@ -810,7 +810,7 @@ MonoBehaviour:
   bombPrefab: {fileID: 626766275534485559, guid: 6b46043e006cc4bf485a0fa25f13e791, type: 3}
   hand: {fileID: 6143301759354771630}
   cam: {fileID: 729530647703780905}
-  throwForce: 50
+  throwForce: 60
 --- !u!114 &-7818080859371933349
 MonoBehaviour:
   m_ObjectHideFlags: 0
