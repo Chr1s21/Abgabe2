@@ -9,6 +9,7 @@ public class PlayerControls : NetworkBehaviour
     [SerializeField] private GameObject hand;
     [SerializeField] private Camera cam;
     [SerializeField] private float throwForce;
+    [SerializeField] private float bombThrowForce = 10f;
 
     private BuildMode buildMode;
 
@@ -72,7 +73,7 @@ public class PlayerControls : NetworkBehaviour
         GameObject bomb = Instantiate(bombPrefab, position, Quaternion.identity);
         bomb.GetComponent<Bomb>().throwerId = OwnerClientId;
         bomb.GetComponent<NetworkObject>().Spawn();
-        bomb.GetComponent<Rigidbody>().AddForce(direction * throwForce, ForceMode.Impulse);
+        bomb.GetComponent<Rigidbody>().AddForce(direction * bombThrowForce, ForceMode.Impulse);
     }
 
     // Server-Prüfung: Ausgeschiedene Spieler und Spieler nach Rundenende dürfen nichts werfen.

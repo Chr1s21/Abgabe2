@@ -778,7 +778,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 2588204256
+  GlobalObjectIdHash: 3326822518
   InScenePlacedSourceGlobalObjectIdHash: 0
   m_InScenePlacedDisabledByDefault: 0
   DeferredDespawnTick: 0
@@ -811,6 +811,7 @@ MonoBehaviour:
   hand: {fileID: 6143301759354771630}
   cam: {fileID: 729530647703780905}
   throwForce: 60
+  bombThrowForce: 10
 --- !u!114 &-7818080859371933349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -889,6 +890,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   maxHealth: 100
   respawnDelay: 3
+  killHeight: -20
+  lastHitCreditTime: 5
   currentHealth:
     UpdateTraits:
       MinSecondsBetweenUpdates: 0
