@@ -10,6 +10,10 @@ public class PlayerHealth : NetworkBehaviour
     public int maxHealth = 100;
     [SerializeField] private float respawnDelay = 3f;
 
+    [Header("Aus der Map fallen")]
+    [SerializeField] private float killHeight = -20f;        // unter dieser Höhe scheidet man aus
+    [SerializeField] private float lastHitCreditTime = 5f;   // so lange zählt ein Treffer noch als Kill
+
     public NetworkVariable<int> currentHealth = new NetworkVariable<int>(
         100, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -21,6 +25,9 @@ public class PlayerHealth : NetworkBehaviour
 
     public float RespawnDelay => respawnDelay;
     public float DeathTime { get; private set; }
+
+    private ulong lastAttackerId = NoAttacker;
+    private float lastAttackTime;
 
     public override void OnNetworkSpawn()
     {
@@ -35,11 +42,33 @@ public class PlayerHealth : NetworkBehaviour
         isDead.OnValueChanged -= OnDeadChanged;
     }
 
+    // ------------------------------------------------ Server
+
+    private void Update()
+    {
+        if (!IsServer || !IsSpawned || isDead.Value) return;
+
+        if (transform.position.y < killHeight)
+        {
+            // Wurde man kurz vorher getroffen, bekommt der Angreifer den Kill.
+            bool recentlyHit = Time.time - lastAttackTime < lastHitCreditTime;
+            ulong attacker = recentlyHit ? lastAttackerId : NoAttacker;
+
+            TakeDamage(currentHealth.Value, attacker);
+        }
+    }
 
     public void TakeDamage(int damage, ulong attackerId = NoAttacker)
     {
         if (!IsServer || isDead.Value || damage <= 0) return;
         if (GameManager.IsGameOver) return;   // nach dem Sieg kein Schaden mehr
+
+        // Letzten Angreifer merken, für den Fall, dass man danach von der Map fällt.
+        if (attackerId != NoAttacker && attackerId != OwnerClientId)
+        {
+            lastAttackerId = attackerId;
+            lastAttackTime = Time.time;
+        }
 
         currentHealth.Value = Mathf.Max(currentHealth.Value - damage, 0);
         Debug.Log($"Player {OwnerClientId} nimmt {damage} Schaden von {attackerId}. Leben: {currentHealth.Value}");
@@ -51,6 +80,7 @@ public class PlayerHealth : NetworkBehaviour
     {
         isDead.Value = true;
 
+        // Kill für den Angreifer, aber nicht, wenn man sich selbst erwischt hat.
         if (attackerId != NoAttacker && attackerId != OwnerClientId)
         {
             PlayerHealth killer = GetPlayer(attackerId);
@@ -63,6 +93,9 @@ public class PlayerHealth : NetworkBehaviour
             }
         }
 
+        // Nach dem Tod zählt der alte Treffer nicht mehr.
+        lastAttackerId = NoAttacker;
+
         Invoke(nameof(Respawn), respawnDelay);
     }
 
@@ -74,6 +107,7 @@ public class PlayerHealth : NetworkBehaviour
         currentHealth.Value = maxHealth;
         RespawnRpc(SpawnPoint.GetRandomPosition((int)(OwnerClientId % 2)));
 
+        // Kurz warten, damit der Teleport ankommt, bevor man wieder sichtbar wird.
         Invoke(nameof(Revive), 0.2f);
     }
 
@@ -82,6 +116,7 @@ public class PlayerHealth : NetworkBehaviour
         isDead.Value = false;
     }
 
+    // Spieler-Objekt zu einer Client-ID finden (nur auf dem Server).
     public static PlayerHealth GetPlayer(ulong clientId)
     {
         if (NetworkManager.Singleton.ConnectedClients.TryGetValue(clientId, out NetworkClient client)
@@ -99,9 +134,11 @@ public class PlayerHealth : NetworkBehaviour
         cc.enabled = false;
         GetComponent<NetworkTransform>().Teleport(spawnPosition, transform.rotation, transform.localScale);
 
+        // Ist man noch "tot", bleibt er aus; eingeschaltet wird er beim Wiederbeleben.
         cc.enabled = !isDead.Value;
     }
 
+    // ------------------------------------------------ Alle Rechner
 
     private void OnDeadChanged(bool oldValue, bool newValue)
     {
@@ -110,6 +147,7 @@ public class PlayerHealth : NetworkBehaviour
 
     private void ApplyDeadState(bool dead)
     {
+        // Für alle: unsichtbar und nicht treffbar.
         foreach (Renderer r in GetComponentsInChildren<Renderer>(true)) r.enabled = !dead;
         foreach (Canvas c in GetComponentsInChildren<Canvas>(true)) c.enabled = !dead;
         foreach (Collider c in GetComponentsInChildren<Collider>(true)) c.enabled = !dead;
@@ -119,6 +157,7 @@ public class PlayerHealth : NetworkBehaviour
         UpdateControls();
     }
 
+    // Steuerung nur, wenn man lebt UND die Runde läuft.
     public void UpdateControls()
     {
         if (!IsOwner) return;
